@@ -25,9 +25,8 @@ dry-run   = "snakemake --dry-run --profile"
 run-local = "snakemake --cores all"
 # Generic Slurm
 run-slurm = "snakemake --profile"
-# Altamira profile
-dry-altamira = "source /gpfs/users/fernandezv/repos/snakemake-wrf-workflow/config/source_files/wps_josipa.sh && ldd $(which real.exe) | grep netcdf && snakemake --profile config/profiles/template_slurm --dry-run"
-run-altamira = "source /gpfs/users/fernandezv/repos/snakemake-wrf-workflow/config/source_files/wps_josipa.sh && snakemake --profile config/profiles/template_slurm"
+# HPC profiles
+hpc-profile = "PROFILE=$1; PROFILE_DIR=\"config/profiles/$PROFILE\"; ENV_SCRIPT=\"$PROFILE_DIR/set_env.sh\"; if [ -d \"$PROFILE_DIR\" ]; then if [ -f \"$ENV_SCRIPT\" ]; then source \"$ENV_SCRIPT\"; fi && snakemake --profile \"$PROFILE_DIR\" \"${@:2}\"; else echo \"Error: HPC profile'$PROFILE' not found under config/profiles/\"; exit 1; fi"
 
 [pypi-dependencies]
 jinja2-shell = ">=0.1.4, <0.2"

@@ -2,3 +2,6 @@
 /eb/
 /run/
 /viejo/
+
+# Ignore orktree del perfil específico
+config/profiles/altamira/
