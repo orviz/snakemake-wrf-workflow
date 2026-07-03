@@ -20,9 +20,14 @@ cdo = ">=2.6.1,<3"
 graphviz = ">=14.1.2,<15"
 
 [tasks]
+# Local
 dry-run   = "snakemake --dry-run --profile"
+run-local = "snakemake --cores all"
+# Generic Slurm
 run-slurm = "snakemake --profile"
-run-local = "snakemake"
+# Altamira profile
+dry-altamira = "source /gpfs/users/fernandezv/repos/snakemake-wrf-workflow/config/source_files/wps_josipa.sh && ldd $(which real.exe) | grep netcdf && snakemake --profile config/profiles/template_slurm --dry-run"
+run-altamira = "source /gpfs/users/fernandezv/repos/snakemake-wrf-workflow/config/source_files/wps_josipa.sh && snakemake --profile config/profiles/template_slurm"
 
 [pypi-dependencies]
 jinja2-shell = ">=0.1.4, <0.2"
