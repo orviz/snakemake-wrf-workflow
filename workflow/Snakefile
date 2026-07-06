@@ -1,8 +1,9 @@
 # Instructions to run this workflow in altamira:
 
-# pixie shell
-# source /gpfs/users/fernandezv/repos/snakemake-wrf-workflow/config/source_files/wps_josipa.sh
-# snakemake --profile=config/profiles/template_slurm/ 
+# FIRST TIME ONLY
+git worktree add config/profiles hpc-profiles # this will load 'altamira' profile under 'config/profiles/altamira/'
+# FOR EVERY WORKFLOW RUN
+pixi run hpc-profile altamira
 
 from itertools import product
 from pathlib import Path
