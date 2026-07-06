@@ -24,6 +24,26 @@ WRF_RUN_FIND_EXCLUDES = " ".join(
     f"! -name {quote(pattern)}" for pattern in WRF_RUN_EXCLUDE_PATTERNS
 )
 
+# ==============================================================================
+# INTEGRATION WITH WRF/WPS COMPILATION MODULE
+# ==============================================================================
+COMPILATION_DEP = []
+
+if config.get("compile_software", False):
+    module wrf_wps_compilation:
+        snakefile: "workflow/Snakefile"
+        config: config["compile_config"]
+        github: "orviz/snakemake-wrf-wps-compilation", tag: "0.3.0"
+
+    # Import rules from the compilation module, but rename the 'all' rule to avoid conflicts.
+    use rule * from wrf_wps_compilation exclude all
+    use rule all from wrf_wps_compilation as run_compilation
+
+    # Redefine installation variables
+    WPS_INSTALL_DIR = rules.run_compilation.output.wps_dir
+    WRF_INSTALL_DIR = rules.run_compilation.output.wrf_dir
+    COMPILATION_DEP = [rules.run_compilation.output.wps_dir, rules.run_compilation.output.wrf_dir]
+# ==============================================================================
 
 def get_run_dir(year):
     """Expand run_dir template with domain and year"""

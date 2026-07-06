@@ -40,4 +40,11 @@ CAMtr_volume_mixing_ratio: "CAMtr_volume_mixing_ratio"
 #ln -sf /cvmfs/software.eessi.io/versions/2025.06/software/linux/x86_64/intel/cascadelake/software/WRF/4.6.1-foss-2024a-dmpar/WRFV4.6.1/run/*.TBL .
 
 
-#ls /gpfs/projects/meteo/WORK/ASNA/projects/cordex-core/02_SAM12_evaluation/rundir/WRFv4.6.1-cordex_core 
+#ls /gpfs/projects/meteo/WORK/ASNA/projects/cordex-core/02_SAM12_evaluation/rundir/WRFv4.6.1-cordex_core
+
+# WRF and WPS compilation settings
+compile_software: true  # Cambiar a 'false' si ya está compilado en el HPC
+compile_config:
+  wrf_version: "4.5"
+  compiler: "intel"
+  prefix: "/gpfs/users/fernandezv/software/wrf"
