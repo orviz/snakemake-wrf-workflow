@@ -32,44 +32,60 @@ only a few days.
 The ERA5 helper `ERA5/retrieve_era5_days4_6.py` was created for the toy example
 to reduce the workflow runtime by downloading only the required days.
 
-## Running Locally
+## Workflow Execution
 
-Start the Pixi environment and run Snakemake:
+This project uses Pixi to manage its environment and execute workflows via automated tasks.
 
-```bash
-pixi shell
-snakemake
-```
+### 1. Dry Run (Recommended first step)
 
-For a dry run:
+To validate the workflow structure, check inputs/outputs, and see what rules will execute without actually running them:
 
 ```bash
-pixi shell
-snakemake -n
+pixi run dry-run
 ```
+
+### 2. Execution
+
+Depending on your infrastructure, run the workflow using one of the following commands:
+
+- **Local execution** (on your current machine):
+
+```bash
+pixi run local
+```
+
+- **Cluster execution** (submitting jobs via SLURM):
+
+```bash
+pixi run slurm
+```
+
+*Note: If you need to append extra Snakemake arguments (like targeting a specific rule), you can pass them directly at the end of the command, for example: `pixi run run-local --cores 4`*
 
 ## Running on Altamira with Slurm
 
-Load the WPS/WRF environment, enter the Pixi shell, and run Snakemake with the
-Slurm profile:
+A specific Pixi task has been defined to run in Altamira HPC.
+
+- **Dry-run**
 
 ```bash
-source /gpfs/users/fernandezv/repos/snakemake-wrf-workflow/config/source_files/wps_josipa.sh
-pixi shell
-ldd `which real.exe` | grep netcdf
-snakemake --profile=config/profiles/template_slurm/
+pixi run dry-altamira
 ```
 
-Before running Snakemake, verify that the WRF environment is properly configured.
-The `ldd` command above should show the NetCDF libraries used by `real.exe`, for
-example:
+*Before running Snakemake, verify that the WRF environment is properly configured. The `ldd` command above should show the NetCDF libraries used by `real.exe`, for example:*
 
 ```text
 libnetcdff.so.7 => /gpfs/projects/meteo/opt/spack/opt/spack/linux-almalinux9-zen2/intel-2021.10.0/netcdf-fortran-4.6.1-qkxq3x6syfzslfo24e5wzcgllfrpisum/lib/libnetcdff.so.7
 libnetcdf.so.19 => /gpfs/projects/meteo/opt/spack/opt/spack/linux-almalinux9-zen2/intel-2021.10.0/netcdf-c-4.9.2-r7sfzbgpbqtqpxlk5l5swrdxoej7mh4c/lib/libnetcdf.so.19
 ```
 
-The Slurm profile lives in `config/profiles/template_slurm/`.
+- **Execution**
+
+```bash
+pixi run run-altamira
+```
+
+*Note: The queue and resource parameters are managed by the profile at `config/profiles/template_slurm/`*.
 
 ## DAG
 
