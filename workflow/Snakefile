@@ -1,10 +1,9 @@
-# Instructions to run this workflow in altamira:
-
-# FIRST TIME ONLY
-git worktree add config/profiles hpc-profiles # this will load 'altamira' profile under 'config/profiles/altamira/'
-# FOR EVERY WORKFLOW RUN
-pixi run hpc-profile altamira
-
+# # Instructions to run this workflow in altamira:
+# 
+# # FIRST TIME ONLY
+# git worktree add config/profiles hpc-profiles # this will load 'altamira' profile under 'config/profiles/altamira/'
+# # FOR EVERY WORKFLOW RUN
+# pixi run hpc-profile altamira
 from itertools import product
 from pathlib import Path
 from shlex import quote
@@ -29,20 +28,19 @@ WRF_RUN_FIND_EXCLUDES = " ".join(
 # ==============================================================================
 COMPILATION_DEP = []
 
-if config.get("compile_software", False):
-    module wrf_wps_compilation:
-        snakefile: "workflow/Snakefile"
-        config: config["compile_config"]
-        github: "orviz/snakemake-wrf-wps-compilation", tag: "0.4.0-alpha1"
+module wrf_wps_compilation:
+    snakefile: "gh:orviz/snakemake-wrf-wps-compilation@0.4.0-alpha1:workflow/Snakefile"
+    config: config.get("compile_config", {})
 
+if config.get("compile_software", False):
     # Import rules from the compilation module, but rename the 'all' rule to avoid conflicts.
     # use rule * from wrf_wps_compilation exclude all
     use rule all from wrf_wps_compilation as run_compilation
 
     # Redefine installation variables
-    WPS_INSTALL_DIR = rules.run_compilation.output.wps_dir
-    WRF_INSTALL_DIR = rules.run_compilation.output.wrf_dir
-    COMPILATION_DEP = [rules.run_compilation.output.wps_dir, rules.run_compilation.output.wrf_dir]
+    WPS_INSTALL_DIR = lambda wildcards: rules.run_compilation.output[0]
+    WRF_INSTALL_DIR = lambda wildcards: rules.run_compilation.output[1]
+    COMPILATION_DEP = [rules.run_compilation.output]
 # ==============================================================================
 
 def get_run_dir(year):
@@ -241,7 +239,7 @@ rule wrf:
         f"{RUN_BASE_DIR_TEMPLATE}/wrf.done"
     params:
         run_dir=lambda wildcards: get_run_dir(wildcards.year),
-        wrf_run_dir=str(Path(WRF_INSTALL_DIR) / "run"),
+        wrf_run_dir=lambda wildcards: str(Path(WRF_INSTALL_DIR(wildcards)) / "run") if callable(WRF_INSTALL_DIR) else str(Path(WRF_INSTALL_DIR) / "run"),
         wrf_run_find_excludes=WRF_RUN_FIND_EXCLUDES,
     resources:
         tasks=16,
